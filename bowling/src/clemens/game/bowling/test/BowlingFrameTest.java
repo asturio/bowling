@@ -1,11 +1,15 @@
 package clemens.game.bowling.test;
+import clemens.game.bowling.BowlingFrame;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import clemens.game.bowling.*;
-
+/** Test class for BownlingFrame.
+ */
 public class BowlingFrameTest {
+    /** The BowlingFrame used in all tests. */
     BowlingFrame frame;
 
     /** My fixture.
@@ -14,6 +18,7 @@ public class BowlingFrameTest {
         frame = new BowlingFrame();
     }
 
+    /** Test if play work. */
     @Test public void testBowlingFramePlay() {
         assertTrue(frame.score() == 0);
         assertTrue(frame.isOpen());
@@ -30,6 +35,7 @@ public class BowlingFrameTest {
         assertTrue(frame.ballsThrown() == 2);
     }
 
+    /** Test if strike code works. */
     @Test public void testBowlingFrameStrike() {
         frame.playBall(4);
         assertFalse(frame.isStrike());
@@ -42,6 +48,7 @@ public class BowlingFrameTest {
         assertFalse(frame.playBall(0));
     }
 
+    /** Test if spare code works. */
     @Test public void testBowlingFrameSpare() {
         frame.playBall(10);
         assertFalse(frame.isSpare());
@@ -54,6 +61,7 @@ public class BowlingFrameTest {
         assertFalse(frame.playBall(0));
     }
 
+    /** Test if pins played are legal. */
     @Test public void testBowlingFrameWrongNumber() {
         assertFalse(frame.playBall(11));
         assertFalse(frame.playBall(-1));
@@ -63,13 +71,32 @@ public class BowlingFrameTest {
         assertTrue(frame.ballsThrown() == 1);
     }
 
-    // Compatible to junit3
+    /** Test if newNextFrame works properly. */
+    @Test public void testNextFrame() {
+        BowlingFrame next;
+        next = frame.newNextFrame();
+        assertTrue(next == null);
+        frame.playBall(3);
+        next = frame.newNextFrame();
+        assertTrue(next == null);
+        frame.playBall(3);
+        next = frame.newNextFrame();
+        assertFalse(next == null);
+    }
+
+    /** Compatibility method for JUnit3.
+     * @return a Test.
+     */
     public static junit.framework.Test suite() {
         return new junit.framework.JUnit4TestAdapter(BowlingFrameTest.class);
     }
 
-    public static void main(String args[]) {
-        org.junit.runner.JUnitCore.main("clemens.game.bowling.test.BowlingFrameTest");
+    /** The main method.
+     * @param args won't be used.
+     */
+    public static void main(final String args[]) {
+        org.junit.runner.JUnitCore.main(
+            "clemens.game.bowling.test.BowlingFrameTest");
     }
 }
 
