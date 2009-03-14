@@ -3,6 +3,7 @@
         Try the fucking junit and ant.
     </description>
     <property name='src' location='src'/>
+    <property name='doc' location='doc'/>
     <property name='build' location='build'/>
     <property name='dist' location='dist'/>
     <property name='projname' value='catbowling'/>
@@ -25,6 +26,41 @@
     <target name='clean' description='Clean all generated files'>
         <delete dir='${dist}'/>
         <delete dir='${build}'/>
+    </target>
+
+    <target name='doc' depends='compile'
+        description='Generates the API documentation of the classes'>
+        <javadoc 
+            sourcepath='${src}'
+            destdir='${doc}'
+            private='yes'
+        />
+    </target>
+
+    <target name='test' depends='compile'
+        description='Runs the testsuite for the classes.'>
+        <taskdef name='junit'
+            classname='org.apache.tools.ant.taskdefs.optional.junit.JUnitTask'>
+            <classpath>
+                <pathelement location='/usr/share/java/junit4.jar'/>
+                <pathelement location='/usr/share/java/ant-junit.jar'/>
+            </classpath>
+        </taskdef>
+
+        <junit printsummary='yes'>
+                <test name='clemens.game.bowling.test.BowlingFrameTest' />
+        </junit>
+    </target>
+
+    <target name='checkstyle' depends='compile'
+        description='Runs checkstyle for the source.'>
+        <taskdef resource='checkstyletask.properties'
+            classpath='/usr/share/java/checkstyle.jar'>
+        </taskdef>
+        <checkstyle config='checkstyle.xml'>
+            <fileset dir='${src}' includes='**/*.java'>
+            </fileset>
+        </checkstyle>
     </target>
 </project>
 
