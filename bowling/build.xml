@@ -23,10 +23,17 @@
         <jar jarfile='${dist}/lib/${projname}.jar' basedir='${build}'/>
     </target>
 
-    <target name='clean' description='Clean all generated files'>
+    <target name='clean' description='Clean all classes and jar files'>
         <delete dir='${dist}'/>
         <delete dir='${build}'/>
     </target>
+
+    <target name='clean-doc' description='Clean all generated doc files'>
+        <delete dir='${doc}'/>
+    </target>
+
+    <target name='clean-all' description='Clean all generated files' 
+        depends='clean,clean-doc'/>
 
     <target name='doc' depends='compile'
         description='Generates the API documentation of the classes'>
