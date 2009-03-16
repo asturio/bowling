@@ -14,6 +14,9 @@ public class BowlingFrame {
     private BowlingFrame nextFrame;
     /** The score of the played balls in this frame. */
     private int score;
+    /** The score of the played balls and any later balls needed for strikes or
+     * spares. */
+    private int finalScore;
     /** The score of all previous frames together. */
     private int lastScore;
     /** Index of the frame (1 to 10). */
@@ -26,6 +29,7 @@ public class BowlingFrame {
             balls[i] = -1;
         }
         index = 1;
+        finalScore = -1;
     }
     
     /** Plays a ball in this frame.
@@ -140,5 +144,67 @@ public class BowlingFrame {
      */
     public int ballsThrown() {
         return thrownBalls;
+    }
+
+    private int getNextBalls(int count) {
+        int nextBalls = -1;
+        int frameBalls = 0;
+        int nFrame;
+        if (nextFrame != null && nextFrame.finished()) {
+            for (int i = 0; i < nextFrame.ballsThrown(); ++i) {
+                frameBalls += nextFrame.balls[i];
+                --count;
+            }
+        }
+        if (count == 0) {
+            nextBalls = frameBalls;
+        } else {
+            nFrame = nextFrame.getNextBalls(count);
+            if (nFrame == -1) {
+                nextBalls = -1;
+            } else {
+                nextBalls = frameBalls + nFrame;
+            }
+        }
+        return nextBalls;
+    }
+
+    public int getFinalScore() {
+        if (!isOpen()) {
+            if (isStrike()) {
+                finalScore = score() + getNextBalls(2);
+            } else if (isSpare()) {
+                finalScore = score() + getNextBalls(1);
+            } else {
+                finalScore = score();
+            }
+        }
+        return finalScore;
+    }
+
+    private BowlingFrame getOldestFrame() {
+        BowlingFrame frame;
+        frame = this;
+        while (frame.previousFrame != null) {
+            frame = frame.previousFrame;
+        }
+        return frame;
+    }
+
+    private boolean closeFrame() {
+        // close a frame if this is possible. (Set finalScore)
+    }
+
+    private static int cleanFramesEmbed(BowlingFrame frame) {
+        // Close all frames...
+    }
+
+    public int cleanFrames() {
+        BowlingFrame frame = getOldestFrame();
+        return cleanFramesEmbed(frame);
+    }
+
+    public int getIndex() {
+        return index;
     }
 }
