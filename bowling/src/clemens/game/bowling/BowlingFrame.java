@@ -248,5 +248,32 @@ public class BowlingFrame {
         return index;
     }
 
+    public String toString() {
+        String ret;
+        ret = "Frame no. " + index;
+        for (int i = 0; i < thrownBalls; i++) {
+            ret += " (b: " + i+1 ;
+            ret += "-> " + balls[i] + ")";
+        }
+        if (isStrike()) {
+            ret += "*";
+        }
 
+        if (isStrike()) {
+            ret += "+";
+        }
+
+        ret += "(s: " + score() + ", fs: " + getFinalScore() + ", ls: " 
+                + getLastScore() + ", ts: " + totalScore() + ")";
+        return ret;
+    }
+
+    public String allToString() {
+        String ret;
+        if (previousFrame != null) {
+            ret = previousFrame.allToString() + "\n";
+        }
+        ret += this;
+        return ret;
+    }
 }

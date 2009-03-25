@@ -1,11 +1,17 @@
 package clemens.game.bowling;
 
-/** XXX: omments.
+/** XXX: comments.
 */
 public class BowlingPlayer {
-    /*
-    private int score;
-    private int frame;
-    private int frameScore;
-    */
+    protected String name;
+
+    /** Plays a frame with random balls. */
+    public void playRandomFrame();
+
+    /** Plays a frame using stdin. */
+    public void playManuallFrame();
+
+    public void notify() {
+    }
+   
 }
