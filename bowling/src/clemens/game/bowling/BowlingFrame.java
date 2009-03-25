@@ -30,6 +30,7 @@ public class BowlingFrame {
         }
         index = 1;
         finalScore = -1;
+        lastScore = -1;
     }
     
     /** Plays a ball in this frame.
@@ -37,12 +38,21 @@ public class BowlingFrame {
      * @return true, if the ball is legal, false else.
      */
     public boolean playBall(final int pins) {
-        if (thrownBalls < 2 && !isStrike() && !isSpare() 
-                && pins >= 0 && pins <= 10) {
-            if (pins + score() <= 10) {
-                balls[thrownBalls++] = pins;
-                return true;
+        int maxBalls = 2;
+        if (isStrike() || isSpare()) {
+            maxBalls = 0; // No balls more to play, but...
+            if (index == 10) {
+                maxBalls = 3;
             }
+        } else {
+            if (score() + pins > 10) { // Normal throws can't score more than 10
+                maxBalls = 0;
+            }
+        }
+       
+        if (thrownBalls < maxBalls && pins >= 0 && pins <= 10) {
+            balls[thrownBalls++] = pins;
+            return true;
         }
         return false;
     }
@@ -51,14 +61,30 @@ public class BowlingFrame {
      * @return true if strike, false else.
      */
     public boolean isStrike() {
-        return (thrownBalls == 1) && (balls[0] == 10);
+        return (balls[0] == 10);
     }
 
     /** Check if this is a spare frame.
      * @return true if spare, false else.
      */
     public boolean isSpare() {
-        return (thrownBalls == 2) && (balls[0] + balls[1] == 10);
+        return (balls[0] + balls[1] == 10);
+    }
+
+    /** Checks if this frame is finished, or if there more balls to play.
+     * @return true, if we can't play any ball, false, if there is more balls
+     * to play.
+     */
+    public boolean finished() {
+        boolean ret = (thrownBalls == 2);
+        if (index < 10) {
+            ret = isStrike() || ret;
+        } else {
+            if (isStrike() || isSpare()) {
+                ret = thrownBalls == 3;
+            }
+        }
+        return ret;
     }
 
     /** This method checks, if the final score of this frame can be counted.
@@ -71,17 +97,17 @@ public class BowlingFrame {
         if (!finished()) {
             ret = true;
         } else if (isSpare()) {
-            // The frame is finished. 
-            ret = (thrownBalls == 3) || (nextBalls(1));
+            ret = (thrownBalls != 3) && (!nextBalls(1));
         } else if (isStrike()) {
-            ret = (thrownBalls == 3) || (nextBalls(2));
+            ret = (thrownBalls != 3) && (!nextBalls(2));
         }
         return ret;
     }
 
-    /** Find if the is so many balls played after this frame.
+    /** Find if there is so many balls played after this frame.
      * @param needBalls the number of balls we need.
      * @return true, if there is at least needBalls played.
+     * XXX Test fehlt
      */
     public boolean nextBalls(final int needBalls) {
         boolean ret = false;
@@ -94,22 +120,11 @@ public class BowlingFrame {
         return ret;
     }
 
-    /** Checks if this frame is finished, or if there more balls to play.
-     * @return true, if we can't play any ball, false, if there is more balls
-     * to play.
+    /** See if there are at least num balls played (this frame and nexts).
+     * XXX Test fehlt
      */
-    public boolean finished() {
-        boolean ret = false;
-        if (index < 10) {
-            ret = (isStrike()) || (thrownBalls == 2);
-        } else {
-            if (isStrike() || isSpare()) {
-                ret = thrownBalls == 3;
-            } else {
-                ret = thrownBalls == 2;
-            }
-        }
-        return ret;
+    public boolean hasBalls(final int num) {
+        return (num <= thrownBalls) || nextBalls(num - thrownBalls);
     }
 
     /** Count the score of this frame.
@@ -146,35 +161,34 @@ public class BowlingFrame {
         return thrownBalls;
     }
 
-    private int getNextBalls(int count) {
-        int nextBalls = -1;
-        int frameBalls = 0;
-        int nFrame;
-        if (nextFrame != null && nextFrame.finished()) {
-            for (int i = 0; i < nextFrame.ballsThrown(); ++i) {
-                frameBalls += nextFrame.balls[i];
-                --count;
+    /** gets the score of num balls (in this frame and consequent frames. No test XXX */
+    public int countBallsScore(final int num) {
+        int localScore = 0;
+        int ballsCounted = 0;
+        if (hasBalls(num)) {
+            for (int i = 0; ballsCounted < num && i < thrownBalls; i++) {
+                localScore += balls[i];
+                ballsCounted++;
             }
-        }
-        if (count == 0) {
-            nextBalls = frameBalls;
-        } else {
-            nFrame = nextFrame.getNextBalls(count);
-            if (nFrame == -1) {
-                nextBalls = -1;
-            } else {
-                nextBalls = frameBalls + nFrame;
+            if (ballsCounted < num && nextFrame != null) {
+                localScore += nextFrame.countBallsScore(num - ballsCounted);
             }
+            return localScore;
         }
-        return nextBalls;
+        return -1;
     }
 
+    /** Calculates the final score of THIS frame. 
+     * This will sum the balls thrown in this frame and any balls needed to complete this score.
+     * @return the final score of this frame or -1 if still not possible.
+     */
     public int getFinalScore() {
+        if (finalScore >= 0) {
+            return finalScore;
+        }
         if (!isOpen()) {
-            if (isStrike()) {
-                finalScore = score() + getNextBalls(2);
-            } else if (isSpare()) {
-                finalScore = score() + getNextBalls(1);
+            if (isStrike() || isSpare()) {
+                finalScore = countBallsScore(3);
             } else {
                 finalScore = score();
             }
@@ -182,29 +196,57 @@ public class BowlingFrame {
         return finalScore;
     }
 
-    private BowlingFrame getOldestFrame() {
-        BowlingFrame frame;
-        frame = this;
-        while (frame.previousFrame != null) {
-            frame = frame.previousFrame;
+    /** Gets and sets the lastScore if this frame.
+     * This is only possible, the the previous frame is closed.
+     * @return the lastScore, or  -1 if not possible.
+     */
+    public int getLastScore() {
+        if (lastScore >= 0) {
+            return lastScore;
         }
-        return frame;
+        if (previousFrame == null) {
+            lastScore = 0;
+        } else if (!previousFrame.isOpen()) {
+            lastScore = previousFrame.totalScore();
+        }
+        return lastScore;
     }
 
-    private boolean closeFrame() {
-        // close a frame if this is possible. (Set finalScore)
+    /** Return the score of the frame, summing lastScore and the finalScore.
+     * @return the totalScore of until this frame. -1 if not possible.
+     */
+    public int totalScore() {
+        if (!isOpen()) {
+            return getFinalScore() + getLastScore();
+        }
+        return -1;
     }
 
-    private static int cleanFramesEmbed(BowlingFrame frame) {
-        // Close all frames...
-    }
-
+    /** Sums the score off all previous frames and delete them if this is possible.
+     * Sums the score og the last frames and delete them, as they aren't needed any more.
+     * lastCore of this frame will be set.
+     * @return the number of closed frames.
+     */
     public int cleanFrames() {
-        BowlingFrame frame = getOldestFrame();
-        return cleanFramesEmbed(frame);
+        // close a frame if this Vddis possible. (Set finalScore and lastScore)
+        int cleanedFrames = 0;
+
+        if (previousFrame != null) {
+            cleanedFrames = previousFrame.cleanFrames();
+            if (!previousFrame.isOpen()) {
+                getLastScore();
+                previousFrame = null;
+                cleanedFrames++;
+            }
+        }
+        return cleanedFrames;
     }
 
+    /** Gets the index of this frame. 
+     * @return the index. */
     public int getIndex() {
         return index;
     }
+
+
 }

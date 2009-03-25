@@ -108,6 +108,7 @@ public class BowlingFrameTest {
         assertTrue(next != null);
         frame = next;
         frame.playBall(10);
+        assertTrue(frame.ballsThrown() == 1);
         assertTrue(frame.cleanFrames() == 0);
         assertTrue(frame.score() == 10);
         assertTrue(frame.getFinalScore() == -1);
@@ -188,7 +189,7 @@ public class BowlingFrameTest {
         assertFalse(frame.isOpen());
         assertTrue(frame.cleanFrames() == 9);
         assertTrue(frame.getIndex() == 10);
-        assertTrue(frame.score() == 10);
+        assertTrue(frame.score() == 30);
         assertTrue(frame.getFinalScore() == 30);
         assertTrue(frame.getLastScore() == 270);
         assertTrue(frame.totalScore() == 300);
@@ -202,7 +203,7 @@ public class BowlingFrameTest {
         assertFalse(frame.isOpen());
         assertTrue(frame.cleanFrames() == 9);
         assertTrue(frame.getIndex() == 10);
-        assertTrue(frame.score() == 10);
+        assertTrue(frame.score() == 15);
         assertTrue(frame.getFinalScore() == 15);
         assertTrue(frame.getLastScore() == 144);
         assertTrue(frame.totalScore() == 159);

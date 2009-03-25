@@ -54,7 +54,7 @@
             </classpath>
         </taskdef>
 
-        <junit printsummary='yes'>
+        <junit printsummary='withOutAndErr'>
                 <test name='clemens.game.bowling.test.BowlingFrameTest' />
         </junit>
     </target>
