@@ -107,10 +107,12 @@ public class BowlingFrame {
     /** Find if there is so many balls played after this frame.
      * @param needBalls the number of balls we need.
      * @return true, if there is at least needBalls played.
-     * XXX Test fehlt
      */
     public boolean nextBalls(final int needBalls) {
         boolean ret = false;
+        if (needBalls == 0) {
+            ret = true;
+        }
         if (nextFrame != null) {
             if (nextFrame.ballsThrown() >= needBalls) {
                 return true;
@@ -121,7 +123,6 @@ public class BowlingFrame {
     }
 
     /** See if there are at least num balls played (this frame and nexts).
-     * XXX Test fehlt
      */
     public boolean hasBalls(final int num) {
         return (num <= thrownBalls) || nextBalls(num - thrownBalls);
@@ -161,7 +162,8 @@ public class BowlingFrame {
         return thrownBalls;
     }
 
-    /** gets the score of num balls (in this frame and consequent frames. No test XXX */
+    /** gets the score of num balls (in this frame and consequent frames. 
+     */
     public int countBallsScore(final int num) {
         int localScore = 0;
         int ballsCounted = 0;
@@ -252,24 +254,24 @@ public class BowlingFrame {
         String ret;
         ret = "Frame no. " + index;
         for (int i = 0; i < thrownBalls; i++) {
-            ret += " (b: " + i+1 ;
+            ret += " (b: " + (i+1) ;
             ret += "-> " + balls[i] + ")";
         }
         if (isStrike()) {
             ret += "*";
         }
 
-        if (isStrike()) {
+        if (isSpare()) {
             ret += "+";
         }
 
-        ret += "(s: " + score() + ", fs: " + getFinalScore() + ", ls: " 
+        ret += " (s: " + score() + ", fs: " + getFinalScore() + ", ls: " 
                 + getLastScore() + ", ts: " + totalScore() + ")";
         return ret;
     }
 
     public String allToString() {
-        String ret;
+        String ret = "";
         if (previousFrame != null) {
             ret = previousFrame.allToString() + "\n";
         }

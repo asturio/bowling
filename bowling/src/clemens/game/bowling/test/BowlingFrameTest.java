@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /** Test class for BownlingFrame.
  */
@@ -21,19 +22,22 @@ public class BowlingFrameTest {
 
     /** Test if play work. */
     @Test public void testBowlingFramePlay() {
-        assertTrue(frame.score() == 0);
-        assertTrue(frame.isOpen());
-        assertTrue(frame.playBall(3));
-        assertTrue(frame.score() == 3);
-        assertFalse(frame.finished());
-        assertTrue(frame.isOpen());
-        assertTrue(frame.playBall(5));
-        assertTrue(frame.score() == 8);
+        assertTrue("Bad score.", frame.score() == 0);
+        assertTrue("Frame is NOT open.", frame.isOpen());
+        assertTrue("Can't play 3.", frame.playBall(3));
+        assertTrue("Invalid score.", frame.score() == 3);
+        assertFalse("Finished too early.", frame.finished());
+        assertTrue("Frame already closed.", frame.isOpen());
+        assertTrue("Can't play 5.", frame.playBall(5));
+        assertTrue("Score not correct.", frame.score() == 8);
         assertTrue(frame.finished());
         assertFalse(frame.isOpen());
         assertFalse(frame.isStrike());
         assertFalse(frame.isSpare());
         assertTrue(frame.ballsThrown() == 2);
+        assertEquals("toString not working", 
+                     "Frame no. 1 (b: 1-> 3) (b: 2-> 5) (s: 8, fs: 8, ls: 0, ts: 8)", 
+                     frame.toString()); 
     }
 
     /** Test if strike code works. */
@@ -209,6 +213,77 @@ public class BowlingFrameTest {
         assertTrue(frame.totalScore() == 159);
         assertFalse(frame.newNextFrame() != null);
     }
+
+    @Test public void testConjectFrames() {
+        assertTrue("Bad ball 1-1", frame.playBall(1));
+        assertTrue("Bad ball 1-2", frame.playBall(4));
+        assertTrue("Next frame problem 2", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 2-1", frame.playBall(4));
+        assertTrue("Bad ball 2-2", frame.playBall(5));
+        assertTrue("Next frame problem 3", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 3-1", frame.playBall(6));
+        assertTrue("Bad ball 3-2", frame.playBall(4));
+        assertTrue("Next frame problem 4", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 4-1", frame.playBall(5));
+        assertTrue("Bad ball 4-2", frame.playBall(5));
+        assertTrue("Next frame problem 5", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 5", frame.playBall(10));
+        assertTrue("Next frame problem 6", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 6-1", frame.playBall(0));
+        assertTrue("Bad ball 6-2", frame.playBall(1));
+        assertTrue("Next frame problem 7", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 7-1", frame.playBall(7));
+        assertTrue("Bad ball 7-2", frame.playBall(3));
+        assertTrue("Next frame problem 8", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 8-1", frame.playBall(6));
+        assertTrue("Bad ball 8-1", frame.playBall(4));
+        assertTrue("Next frame problem 9", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 9", frame.playBall(10));
+        assertTrue("Next frame problem 10", (frame = frame.newNextFrame()) != null);
+        assertTrue("Bad ball 10-1", frame.playBall(2));
+        assertTrue("Bad ball 10-2", frame.playBall(8));
+        assertTrue("Bad ball 10-3", frame.playBall(6));
+        assertFalse("Still open?", frame.isOpen());
+        assertTrue("Not finished", frame.finished());
+        assertTrue("Wrong score", frame.totalScore() == 133);
+
+        System.out.println(frame.allToString());
+    }
+
+    @Test public void testNextBalls() {
+        assertTrue(frame.nextBalls(0));
+        frame.playBall(2);
+        frame.playBall(3);
+        assertTrue(frame.nextBalls(0));
+        BowlingFrame next = frame.newNextFrame();
+        next.playBall(4);
+        assertTrue(frame.nextBalls(1));
+        assertFalse(frame.nextBalls(2));
+        next.playBall(5);
+        assertTrue(frame.nextBalls(2));
+        assertFalse(frame.nextBalls(3));
+    }
+
+    @Test public void testHasBalls() {
+        assertFalse(frame.hasBalls(1));
+        frame.playBall(2);
+        frame.playBall(3);
+        assertTrue(frame.hasBalls(2));
+        BowlingFrame next = frame.newNextFrame();
+        next.playBall(4);
+        assertTrue(frame.hasBalls(3));
+        assertFalse(frame.hasBalls(4));
+        next.playBall(5);
+        assertTrue(frame.hasBalls(4));
+        assertFalse(frame.hasBalls(5));
+
+        assertTrue(frame.countBallsScore(0) == 0);
+        assertTrue(frame.countBallsScore(1) == 2);
+        assertTrue(frame.countBallsScore(2) == 5);
+        assertTrue(frame.countBallsScore(3) == 9);
+        assertTrue(frame.countBallsScore(4) == 14);
+    }
+
 
     /** Compatibility method for JUnit3.
      * @return a Test.
