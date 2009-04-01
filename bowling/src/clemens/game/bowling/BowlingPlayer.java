@@ -2,18 +2,21 @@ package clemens.game.bowling;
 
 /** XXX: comments.
 */
-public class BowlingPlayer {
+public abstract class BowlingPlayer {
     protected String name;
+    protected BowlingFrame frame;
 
-    /** Plays a frame with random balls. */
-    public void playRandomFrame() {
+    public BowlingPlayer() {
+        frame = new BowlingFrame();
     }
 
-    /** Plays a frame using stdin. */
-    public void playManuallFrame() {
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void activation() {
+    public String getName() {
+        return name;
     }
-   
+
+    public void playFrame();
 }

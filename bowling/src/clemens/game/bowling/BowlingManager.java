@@ -1,15 +1,6 @@
 package clemens.game.bowling;
 
-// import java.util.Vector;
-
-/** XXX: omments.
-*/
-public class BowlingManager {
-    /*
-    private int frames;
-    private Vector players;
-    */
-}
+import java.util.ArrayList;
 
 /* 
  * - 10 Pins
@@ -26,3 +17,33 @@ public class BowlingManager {
  * - strike on 10. frame: 2 more balls to complete the score
  * - spare on 10. frame: 1 more balls to complete the score
  */
+/** XXX: omments.
+*/
+public class BowlingManager {
+    ArrayList<BowlingPlayer> playerList;
+
+    public BowlingManager() {
+        playerList = new ArrayList<BowlingPlayer>();
+    }
+
+    public void addPlayer(BowlingPlayer player) {
+        playerList.add(player);
+    }
+
+    public void playGame() {
+        for (int frame = 1; frame <= 10; frame++) {
+            for (BowlingPlayer player: playerList) {
+                player.playFrame();
+            }
+        }
+    }
+
+    public void showFinalScore() {
+        for (BowlingPlayer player: playerList) {
+            Splayer;
+        }
+    }
+
+    
+}
+
