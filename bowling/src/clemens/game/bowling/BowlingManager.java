@@ -32,15 +32,17 @@ public class BowlingManager {
 
     public void playGame() {
         for (int frame = 1; frame <= 10; frame++) {
+            System.out.println("Frame " + frame);
             for (BowlingPlayer player: playerList) {
                 player.playFrame();
+                player.setNextFrame();
             }
         }
     }
 
     public void showFinalScore() {
         for (BowlingPlayer player: playerList) {
-            Splayer;
+            player.showScore();
         }
     }
 

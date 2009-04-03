@@ -1,6 +1,9 @@
 package clemens.game.bowling;
 
-public class BowlingRandomPlayer extends BowlingPlayer() {
+import java.util.Random;
+
+public class BowlingRandomPlayer extends BowlingPlayer {
+    Random rand;
 
     public BowlingRandomPlayer() {
         this("BowlingRandomPlayer");
@@ -9,19 +12,12 @@ public class BowlingRandomPlayer extends BowlingPlayer() {
     public BowlingRandomPlayer(String name) {
         super();
         setName(name);
+        rand = new Random();
     }
 
     public void playFrame() {
         while (!frame.finished()) {
-            frame.playBall("RANDOM from 0 to 10");
+            frame.playBall(rand.nextInt(11));
         }
-    }
-
-    public void showScore() {
-        // show my total score;
-    }
-
-    public setNextFrame() {
-        frame = frame.newNextFrame();
     }
 }

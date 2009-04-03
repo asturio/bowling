@@ -18,5 +18,18 @@ public abstract class BowlingPlayer {
         return name;
     }
 
-    public void playFrame();
+    public void setNextFrame() {
+        if (frame.getIndex() < 10) {
+            frame = frame.newNextFrame();
+        }
+    }
+
+    public void showScore() {
+        System.out.println(name + " score Frame: " + frame.score() 
+                           + " History: " + frame.totalScore() 
+                           + " Final: " + frame.getFinalScore());
+        
+    };
+
+    abstract public void playFrame();
 }
