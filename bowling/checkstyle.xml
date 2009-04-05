@@ -17,8 +17,8 @@
         <module name='ExplicitInitialization'/>
         <module name='FileLength'/>
         <module name='FinalClass'/>
-        <module name='FinalLocalVariable'/>
-        <module name='FinalParameters'/>
+        <!-- module name='FinalLocalVariable'/ -->
+        <!-- module name='FinalParameters'/ -->
         <module name='HiddenField'/>
         <module name='IllegalCatch'/>
         <module name='ImportOrder'/>
@@ -31,12 +31,17 @@
         <module name='LeftCurly'/>
         <module name='LineLength'/>
         <module name='LocalVariableName'/>
-        <module name='MethodLength'/>
+        <!-- module name='MethodLength'>
+            <property name='max' value='30'/>
+            <property name='countEmpty' value='false' />
+        </module-->
         <module name='MethodName'/>
         <module name='MethodParamPad'/>
         <module name='MissingSwitchDefault'/>
         <module name='ModifiedControlVariable'/>
-        <module name='MultipleStringLiterals'/>
+        <module name='MultipleStringLiterals'>
+            <property name='allowedDuplicates' value='3'/>
+        </module>
         <module name='MultipleVariableDeclarations'/>
         <module name='NeedBraces'/>
         <module name='NestedIfDepth'/>
@@ -68,8 +73,8 @@
         <module name='TypecastParenPad'/>
         <module name='UnnecessaryParentheses'/>
         <module name='UnusedImports'/>
-        <module name='WhitespaceAfter'/>
-        <module name='WhitespaceAround'/>
+        <!-- module name='WhitespaceAfter'/>
+        <module name='WhitespaceAround'/-->
     </module>
     <module name='NewlineAtEndOfFile'/>
     <module name='StrictDuplicateCode'/>

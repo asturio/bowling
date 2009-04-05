@@ -39,13 +39,15 @@ public class BowlingFrame {
      */
     public boolean playBall(final int pins) {
         int maxBalls = 2;
+        // No balls more to play, but...
         if (isStrike() || isSpare()) {
-            maxBalls = 0; // No balls more to play, but...
+            maxBalls = 0; 
             if (index == 10) {
                 maxBalls = 3;
             }
         } else {
-            if (score() + pins > 10) { // Normal throws can't score more than 10
+            // Normal throws can't score more than 10
+            if (score() + pins > 10) { 
                 maxBalls = 0;
             }
         }
@@ -61,14 +63,14 @@ public class BowlingFrame {
      * @return true if strike, false else.
      */
     public boolean isStrike() {
-        return (balls[0] == 10);
+        return balls[0] == 10;
     }
 
     /** Check if this is a spare frame.
      * @return true if spare, false else.
      */
     public boolean isSpare() {
-        return (balls[0] + balls[1] == 10);
+        return (balls[0] + balls[1]) == 10;
     }
 
     /** Checks if this frame is finished, or if there more balls to play.
@@ -123,6 +125,8 @@ public class BowlingFrame {
     }
 
     /** See if there are at least num balls played (this frame and nexts).
+     *  @param num How many balls should be checked.
+     *  @return true if there are at least num played balls, or false else.
      */
     public boolean hasBalls(final int num) {
         return (num <= thrownBalls) || nextBalls(num - thrownBalls);
@@ -163,6 +167,8 @@ public class BowlingFrame {
     }
 
     /** gets the score of num balls (in this frame and consequent frames. 
+     *  @param num the number of balls to count.
+     *  @return the score of num balls.
      */
     public int countBallsScore(final int num) {
         int localScore = 0;
@@ -181,7 +187,8 @@ public class BowlingFrame {
     }
 
     /** Calculates the final score of THIS frame. 
-     * This will sum the balls thrown in this frame and any balls needed to complete this score.
+     * This will sum the balls thrown in this frame and any balls needed to
+     * complete this score.
      * @return the final score of this frame or -1 if still not possible.
      */
     public int getFinalScore() {
@@ -224,9 +231,10 @@ public class BowlingFrame {
         return -1;
     }
 
-    /** Sums the score off all previous frames and delete them if this is possible.
-     * Sums the score og the last frames and delete them, as they aren't needed any more.
-     * lastCore of this frame will be set.
+    /** Sums the score off all previous frames and delete them if this is
+     * possible.
+     * Sums the score og the last frames and delete them, as they aren't needed
+     * any more.  lastCore of this frame will be set.
      * @return the number of closed frames.
      */
     public int cleanFrames() {
@@ -250,13 +258,19 @@ public class BowlingFrame {
         return index;
     }
 
+    /** String represantaion of one (this) frame.
+     *  @return the String form of the frame.
+     */
     public String toString() {
         String ret;
-        ret = "Frame no. " + index;
+        ret = "Frame no. " + index + " [";
         for (int i = 0; i < thrownBalls; i++) {
-            ret += " (b: " + (i+1) ;
-            ret += "-> " + balls[i] + ")";
+            if (i > 0) {
+                ret += ", ";
+            }
+            ret += balls[i];
         }
+        ret += "]";
         if (isStrike()) {
             ret += "*";
         }
@@ -265,11 +279,15 @@ public class BowlingFrame {
             ret += "+";
         }
 
-        ret += " (s: " + score() + ", fs: " + getFinalScore() + ", ls: " 
-                + getLastScore() + ", ts: " + totalScore() + ")";
+        ret += " (s: " + score() + ", final: " + getFinalScore() + ", last: " 
+                + getLastScore() + ", total: " + totalScore() + ")";
         return ret;
     }
 
+    /** Method for getting the String representation of all frames.
+     *  Note that cleared frames won't be displayed.
+     *  @return the String form of all frames.
+     */
     public String allToString() {
         String ret = "";
         if (previousFrame != null) {
